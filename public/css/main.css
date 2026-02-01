@@ -1,0 +1,39 @@
+:root {
+    --color-text:#000;
+    --current-font-family-body: 'Inter', sans-serif;;
+    --current-font-family-title: 'Inter', sans-serif;
+    --only-background-color:#EFF8FA;
+    --border-color :#222736;
+    --color-pantone720 : #8c573a;
+    --color-info : #a18262;
+    --color-base-text : #1e1e1e;
+    --border-radius : 10px;
+    /*HOTEL CUIELO DE CEBRERO*/
+    --border-color-custom :#ffffff;
+    --color-button :rgb(100, 181, 246) !important;
+    --color-text-title:#dfa974;   
+    --color-button-error: red;
+  }
+
+  
+  body{
+    background: var(--only-background-color);
+  }
+
+html {
+    font-family: var(--current-font-family-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--current-font-family-title);
+}
+
+header, main, footer {
+    padding-left: 300px;
+  }
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+      padding-left: 0;
+    }
+  }
