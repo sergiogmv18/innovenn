@@ -1,126 +1,82 @@
-# 🏨 Sistema de Reservas para Hospedaje - Laravel + Materialize + FullCalendar
+﻿# Sistema de Reservas para Hospedaje
 
-Este sistema permite la gestión completa de reservas para un hospedaje con integración de calendario visual, sincronización con Booking.com mediante iCal, funcionalidades contables y herramientas de cumplimiento para autoridades turísticas.
+Aplicacion web para gestionar reservas, calendario, check-in de viajeros, facturacion y exportacion de datos para autoridades turísticas. Incluye sincronizacion por iCal con Booking.com.
 
----
+## Funcionalidades
+- Calendario de reservas con altas, ediciones y eliminaciones.
+- Reservas por habitacion con colores y validacion de fechas.
+- Importacion/exportacion iCal para sincronizacion con Booking.com.
+- Modulo contable: facturas y resumenes mensuales.
+- Registro de viajeros y generacion de XML para hospedaje.
+- Seguridad por token en endpoints de sincronizacion.
 
-## 🚀 Tecnologías Usadas
+## Tecnologias
+- Laravel 11 (PHP)
+- MaterializeCSS
+- FullCalendar.js
+- MySQL o SQLite
+- Vite + Tailwind (tooling)
+- ICS Parser (u01jmg3/ics-parser)
 
-* **Laravel** (Backend PHP)
-* **MaterializeCSS** (Diseño frontend)
-* **FullCalendar.js** (Calendario interactivo)
-* **MySQL** (Base de datos)
-* **ICS Parser** (`u01jmg3/ics-parser`) para leer archivos iCal
+## Requisitos
+- PHP 8.2+
+- Composer
+- Node.js 18+ y npm
+- Base de datos (MySQL o SQLite)
 
----
-
-## 📅 Módulo de Reservas
-
-### Funciones principales:
-
-* Crear, editar y eliminar reservas.
-* Calendario mensual visual tipo Booking.
-* Reservas divididas por habitación (3 habitaciones, 3 colores).
-* Validación automática de fechas (fecha final no puede ser menor que fecha de entrada).
-* Modal para gestión rápida desde el calendario.
-
----
-
-## 🔄 Integración con Booking.com (vía iCal)
-
-### Importación:
-
-* Se obtiene el archivo `.ics` de Booking.
-* Laravel lo lee y crea reservas nuevas si no existen.
-* Automatizado por cron job (cada 30 minutos en Hostinger).
-
-### Exportación:
-
-* El sistema genera un `.ics` con todas las reservas locales.
-* Booking puede leer este archivo para actualizar su disponibilidad.
-* Protegido con token `SYNC_TOKEN` para evitar accesos no autorizados.
-
----
-
-## 📈 Módulo Contable
-
-### Características:
-
-* Generación de **facturas** por cada huésped.
-* Cálculo del **total mensual** generado por reservas.
-* Exportación de registros contables para revisión o auditoría.
-
----
-
-## 🧾 Módulo de Viajero / Check-in Online
-
-### Funcionalidad:
-
-* Huéspedes completan sus datos antes de llegar.
-* Se almacena la información en la base de datos.
-* Posibilidad de generar un **registro físico descargable (PDF)** para firma.
-
----
-
-## 📤 XML para Hospedería
-
-* El sistema genera un archivo XML compatible con los requisitos de hospedería local.
-* Permite enviar informes de forma digital a la autoridad correspondiente.
-* Cada reserva incluye información del viajero y la estadía.
-
----
-
-## 🔐 Seguridad
-
-* Los endpoints de sincronización están protegidos con un token seguro de 64 caracteres.
-* Validaciones en formularios para evitar datos incorrectos o maliciosos.
-
----
-
-## 📦 Archivos clave
-
-* `/sync-booking/{token}`: importa reservas desde Booking.
-* `/calendario.ics/{token}`: exporta reservas locales como iCal.
-* `.env`: incluye el token `SYNC_TOKEN=...`
-
----
-## Command para hacer 
-* composer require u01jmg3/ics-parser
-
-## Command to Hostinger 
-* COMPOSER_MEMORY_LIMIT=-1 ~/composer2 require u01jmg3/ics-parser 
-
-## 📅 Cron Job (Hostinger)
-
-Ejemplo de cron job:
-
+## Instalacion local
 ```bash
-wget -q -O - https://tudominio.com/sync-booking/your_token > /dev/null 2>&1
+composer install
+npm install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
 ```
 
-Corre cada 30 minutos para mantener la sincronización activa.
+Opcional (SQLite):
+```bash
+type nul > database/database.sqlite
+```
 
----
+## Configuracion (.env)
+Ajusta al menos:
+- `APP_URL`
+- `DB_CONNECTION`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- `SYNC_TOKEN` (token para sincronizacion iCal)
 
-## ✅ Estado actual
+## Ejecutar en desarrollo
+```bash
+php artisan serve
+npm run dev
+```
 
-* [x] Calendario funcional (crear, editar, eliminar)
-* [x] Colores por habitación
-* [x] Validación de fechas
-* [x] Importación desde Booking
-* [x] Exportación .ics
-* [x] Cron en Hostinger
-* [x] Gestión contable mensual y por reserva
-* [x] Check-in online
-* [x] Generación de XML para hospedería
+## Sincronizacion con Booking.com (iCal)
+Endpoints publicos protegidos con `SYNC_TOKEN`:
+- `GET /sync-booking/{token}`: importa reservas desde Booking.
+- `GET /calendario.ics/{token}`: exporta reservas locales en formato iCal.
 
----
+En `app/Http/Controllers/BookingController.php`, actualiza la URL del feed de Booking.com en el metodo `importToBooking`:
+```
+https://calendar.booking.com/ical/tu-hotel.ics
+```
 
-## 🛠 Ideas futuras (opcional)
+## Cron job (ejemplo)
+```bash
+wget -q -O - https://tudominio.com/sync-booking/tu_token > /dev/null 2>&1
+```
 
-* Filtros por habitación o estado en el calendario
-* Enviar notificaciones por email automáticas
-* Dashboard de KPIs (ocupación, ingresos, cancelaciones)
-* API REST para terceros
+## Scripts utiles
+```bash
+composer require u01jmg3/ics-parser
+npm run dev
+npm run build
+```
 
+## Pruebas
+```bash
+php artisan test
+```
 
+## Notas
+- El endpoint de exportacion genera `calendario.ics` con las reservas en base de datos.
+- La importacion evita duplicados por fecha y origen.
