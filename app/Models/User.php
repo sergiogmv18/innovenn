@@ -184,13 +184,11 @@ class User extends Authenticatable
                 'address_uuid' => 'nullable|string',
                 'hotel_uuid' => 'nullable|string',
             ];
-
             if ($isUpdate) {
                 $rules['password'] = 'nullable|string';
             } else {
                 $rules['password'] = 'required|string';
             }
-
             $messages = [
                 'first_name.required' => 'El nombre es obligatorio.',
                 'first_name.string' => 'El nombre debe ser un texto valido.',

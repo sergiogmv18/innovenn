@@ -15,18 +15,28 @@ class VerificationUser
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next):Response
+    public function handle(Request $request, Closure $next): Response
     {
         // Verificar si hay una sesión activa
         if (!Session::has('user') || now()->greaterThan(Session::get('expires_at'))) {
-            Session::forget('user'); 
-            $data = [
-                'route'=> route('login'),
-                'message'=> 'Usuario no encontrado, Por favor inicie session',
-            ];
-            return redirect()->route('errorPage')->with($data);
-            
+            Session::forget('user');
+            return redirect()->route('errorPage')->with([
+                'route' => route('login'),
+                'message' => 'Usuario no encontrado. Por favor inicia sesión.',
+            ]);
         }
+
+        $userWk = Session::get('user');
+        $hotelUUID = $userWk->hotel_uuid ?? null;
+        if ($hotelUUID == null) {
+            Auth::logout();
+            $request->session()->flush();
+            return redirect()->route('errorPage')->with([
+                'route' => route('login'),
+                'message' => 'Error: no se han encontrado habitaciones relacionadas. Por favor, inicia sesión nuevamente o inténtalo más tarde.',
+            ]);
+        }
+
         return $next($request);
     }
 }

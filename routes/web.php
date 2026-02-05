@@ -5,13 +5,10 @@ use App\Http\Controllers\TravelersRegisterController;
 use App\Http\Controllers\TravelerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/',[TravelersRegisterController::class,'welcome'])->name('welcome');
-Route::get('/login',[TravelersRegisterController::class,'login'])->name('login')->middleware('logged');
-Route::get('/error',[TravelersRegisterController::class,'errorPage'])->name('errorPage');
-Route::get('/verify/user',[TravelersRegisterController::class,'signIn'])->name('signIn');
-route::get('/sign-out',[TravelersRegisterController::class,'signOut'])->name('signOut');
+
 
 Route::get('/home/{useruuid}',[UserController::class,'travelersRegisterHome'])->name('travelersRegisterHome')->middleware('verificationUser');
 Route::get('/registro-de-viajero/{useruuid}',[TravelerController::class,'travelerRegistration'])->name('travelerRegistration')->middleware('verificationUser');
@@ -78,6 +75,13 @@ Route::get('/sync-booking/{token}', [BookingController::class, 'importToBooking'
 
 
 
+
+Route::get('/',[TravelersRegisterController::class,'welcome'])->name('welcome');
+Route::get('/login',[TravelersRegisterController::class,'login'])->name('login')->middleware('logged');
+Route::get('/error',[TravelersRegisterController::class,'errorPage'])->name('errorPage');
+Route::get('/verify/user',[TravelersRegisterController::class,'signIn'])->name('signIn');
+route::get('/sign-out',[TravelersRegisterController::class,'signOut'])->name('signOut');
+
 // USERS
 // ALL USER HOME
 Route::get('user/{token}/all-users/', [UserController::class, 'allUserHome'])->name('allUserHome')->middleware('verificationUser');
@@ -88,3 +92,11 @@ Route::get('user/{token}/edit/{uuid}', [UserController::class, 'createOrEditUser
 Route::post('user/{token}/create/', [UserController::class, 'store'])->name('storeUser')->middleware('verificationUser');
 Route::put('user/{token}/edit/{uuid}', [UserController::class, 'update'])->name('updateUser')->middleware('verificationUser');
 Route::post('user/{token}/delete/{uuid}', [UserController::class, 'destroy'])->name('deleteUser')->middleware('verificationUser');
+
+// ROOMS
+Route::get('rooms/{token}', [RoomController::class, 'roomIndex'])->name('roomIndex')->middleware('verificationUser');
+Route::get('all-rooms/{token}', [RoomController::class, 'getAllRooms'])->name('getAllRooms')->middleware('verificationUser');
+Route::get('room/{token}/create', [RoomController::class, 'createOrEditRoomIndex'])->name('createOrEditRoomIndex')->middleware('verificationUser');
+Route::get('room/{token}/edit/{uuid}', [RoomController::class, 'createOrEditRoomIndex'])->name('editRoomForm')->middleware('verificationUser');
+Route::post('room/{token}/create', [RoomController::class, 'store'])->name('storeRoom')->middleware('verificationUser');
+Route::put('room/{token}/edit/{uuid}', [RoomController::class, 'update'])->name('updateRoom')->middleware('verificationUser');

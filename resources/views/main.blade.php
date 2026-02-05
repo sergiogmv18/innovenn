@@ -125,6 +125,7 @@
 
         var modalGenerateUrlTravel;
         document.addEventListener('DOMContentLoaded', function() {
+            initialSelectMaterialize();
             var elemsSidenav = document.querySelectorAll('.sidenav');
             M.Sidenav.init(elemsSidenav, {});
             //

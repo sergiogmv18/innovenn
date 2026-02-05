@@ -1,21 +1,52 @@
 @extends('main')
 @section('showSearch', false)
 
-@section('title', 'Crear Parte de viajero')
+@section('title', 'Crear hoja de registro huesped')
 <style>
     .option-label-select-materialize{
         display: none;
      }
+
+    .page-title {
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin-top: 4px;
+        font-size: 14px;
+    }
+
+    .page-wrap {
+        background: var(--only-background-color);
+        min-height: 100vh;
+        padding: 26px;
+    }
+
+    .card {
+        border-radius: var(--border-radius) !important;
+    }
 </style>
 @section('content')
+<div class="page-wrap">
     <!-- FORMULARIOS -->
-    <!-- <section class="section section-stats center"> -->
-    <div class="container">
-        <form>
+    <section class="section section-stats">
+
+     <div class="row">
+        <div class="col s12">
+            <h5 style="font-weight:800;margin:0;">Registro de Huesped</h5>
+            <p class="grey-text" style="margin-top:6px;">
+                Todos los campos con (*) son obligatorios
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+    <div class="col s12">
+        <div class="card white z-depth-1">
+                <div class="card-content">
+                    <form>
             <div class="row">
-                <div class="col s12 m12 l12 lx12">
-                    <h6 class="left" >Todos los campos con (*) son obligatorios</h6>
-                </div>
 <!-- TITLES PERSONAL DATA -->
                 <div class="col s12 m12 l12 lx12">
                     <h5 class="left" >Datos personales</h5>
@@ -30,10 +61,10 @@
                     <label for="travel-apellido">1º Apellido *</label>
                     <span class="helper-text" data-error="Campo obligatorio" data-success=""></span>
                 </div>
-                <div class="input-field col s12 m6 l6 lx6">
+                <!-- <div class="input-field col s12 m6 l6 lx6">
                     <input name="travel-apellido-2"  type="text" id="travel-do-apellido" class="validate" />
                     <label for="travel-do-apellido">2º Apellido</label>
-                </div>
+                </div> -->
                 <div class="input-field col s12 m6 l6 lx6">
                     <select class="select-materialize" id="country-selector">
                         <option class="option-label-select-materialize" value="" disabled selected>Seleccione Nacionalidad</option>
@@ -100,12 +131,8 @@
                 </div>
                 <div class="input-field col s6 m6 l6 lx6">
                     <select class="select-materialize" id="travel-type-of-documents">
-                        <option value="OTRO" selected>DNI</option>
+                        <option value="C.I" selected>C.I</option>
                         <option value="Pasaporte">Pasaporte</option>
-                        <option value="NIF">NIF</option>
-                        <option value="NIE">NIE</option>
-                        <option value="CIF">CIF</option>
-                        <option value="OTRO">OTRO</option>
                     </select>
                     <label class="label-select-materialize">Tipo de documento</label>
                 </div>
@@ -311,6 +338,8 @@
                 </a>
             </div>
         </form>
+                </div>
+            </div>
     </div>
 
 
@@ -338,6 +367,10 @@
             <a href="#!" class="modal-close waves-effect waves-red btn-flat">cancelar</a>
         </div>
     </div>
+    </div>
+    </section>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -701,7 +734,7 @@
             }
             let firstName = document.getElementById('travel-name').value.trim();
             let subName = document.getElementById('travel-apellido').value.trim();
-            let lastName = document.getElementById('travel-do-apellido').value.trim();
+            // let lastName = document.getElementById('travel-do-apellido').value.trim();
             let countrySelected = document.getElementById("country-selector").value.trim();
             // let typeOfContact = document.getElementById("travel-type-of-contact-1").value.trim();
             let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -961,7 +994,7 @@
             const formData = new FormData();
             formData.append('firstName', firstName);
             formData.append('subName', subName);
-            formData.append('lastName', lastName);
+            //formData.append('lastName', lastName);
             formData.append('phoneNumber', contactPhoneNumber);
             formData.append('emailAddress', email);
             formData.append('sex', sex);

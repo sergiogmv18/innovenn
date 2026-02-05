@@ -88,7 +88,9 @@ class TravelerController extends Controller
         // ENCRYPT
         $arraytravel['firstName'] = $crypt->encryptData($arraytravel['firstName']);
         $arraytravel['subName'] = $crypt->encryptData($arraytravel['subName']);
-        $arraytravel['lastName'] = $arraytravel['lastName'] != null && !empty($arraytravel['lastName']) ? $crypt->encryptData($arraytravel['lastName']): $arraytravel['lastName'];
+        $currentUser = Session::get('user');
+        $arraytravel['hotel_uuid'] = $currentUser->hotel_uuid;
+        // $arraytravel['lastName'] = $arraytravel['lastName'] != null && !empty($arraytravel['lastName']) ? $crypt->encryptData($arraytravel['lastName']): $arraytravel['lastName'];
         $arraytravel['phoneNumber'] = $arraytravel['phoneNumber'] != null && !empty($arraytravel['phoneNumber']) ? $crypt->encryptData($arraytravel['phoneNumber']) : $arraytravel['phoneNumber'];
         $arraytravel['emailAddress'] = $arraytravel['emailAddress'] != null && !empty($arraytravel['emailAddress']) ? $crypt->encryptData($arraytravel['emailAddress']) : $arraytravel['emailAddress']; 
         $arraytravel['documentNumber'] = $crypt->encryptData($arraytravel['documentNumber']);

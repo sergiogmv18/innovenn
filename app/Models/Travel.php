@@ -49,6 +49,7 @@ class Travel extends Model
         'eFirma',
         'usePersonalDataInInvoice',
         'isTrash',
+        'hotel_uuid'
 
 
     ];

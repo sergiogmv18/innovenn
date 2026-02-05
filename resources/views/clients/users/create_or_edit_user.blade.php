@@ -1,11 +1,5 @@
 @extends('main')
 @section('showSearch', false)
-@php
-$isEdit = isset($userWk);
-$formAction = $formAction ?? '';
-$formMethod = $formMethod ?? ($isEdit ? 'PUT' : 'POST');
-$addressWk = $addressWk ?? null;
-@endphp
 @section('title', $isEdit ? 'Editar Usuario' : 'Crear Usuario')
 
 <style>
@@ -174,8 +168,6 @@ $addressWk = $addressWk ?? null;
             </div>
         </div>
     </div>
-
-
 </div>
 @endsection
 

@@ -90,6 +90,21 @@
             </li>
         </ul>
     </li>
+    <!-- HOTEL -->
+    <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+            <li>
+                <a class="collapsible-header white-text">Hotel<i class="fa-solid fa-hotel white-text"></i></a>
+                <div class="collapsible-body">
+                    <ul style="background-color: var(--color-button);">
+                        <li><a class="white-text" href="{{route('roomIndex',   Session::get('user')->hotel_uuid )}}">Recepcionar habitaciones</a></li>
+                        <li><a class="white-text" href="{{route('getAllRooms',   Session::get('user')->hotel_uuid )}}">Todas habitaciones</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </li>
+    <!-- USER -->
      <li class="no-padding">
         <ul class="collapsible collapsible-accordion">
             <li>
@@ -97,7 +112,7 @@
                 <div class="collapsible-body">
                     <ul style="background-color: var(--color-button);">
                         <li><a class="white-text" href="{{route('allUserHome', Session::get('user')->uuid) }}">Todos los usuarios</a></li>
-                        <li><a class="white-text" href="{{route('createOrEditUserIndex', Session::get('user')->uuid) }}  ">Crear usuario</a></li>
+                        <li><a class="white-text" href="{{route('createOrEditUserIndex', Session::get('user')->uuid) }}">Crear usuario</a></li>
                     </ul>
                 </div>
             </li>

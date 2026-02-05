@@ -51,7 +51,6 @@ class UserController extends Controller
         $user = new User();
         $data = [
             "userRelatedWithHotel" => $user->getTotalUsersWithHotel($userWk->hotel_uuid) ?? 0,
-
             "allRegisteredCurrentYear" => $travelModel->getTotalCountCurrentYear(),
             "betsSellingRooms" => $travelModel->getQuantityAnualRegisted(),
             "quantityRegisted" => $travelModel->getTotalCount(),
@@ -87,6 +86,7 @@ class UserController extends Controller
                 ]);
             }
             $data["userWk"] = $userWk->getDecryptDataOfUser();
+
             $addressWk = Address::where('uuid', $userWk->address_uuid)->first();
             if ($addressWk) {
                 $data["addressWk"] = $addressWk->getDecryptDataOfAddress();
@@ -97,6 +97,7 @@ class UserController extends Controller
             $data["formAction"] = route('storeUser', ['token' => $token]);
             $data["formMethod"] = 'POST';
         }
+        $data["isEdit"] =  isset($userWk);
         return view("clients.users.create_or_edit_user", $data);
     }
 
@@ -116,13 +117,11 @@ class UserController extends Controller
                 'message' => 'Error: sesion no valida. Por favor inicia sesion nuevamente.',
             ]);
         }
-
         $user = new User();
         $validation = $user->validateInput($request);
         if (!$validation['success']) {
             return back()->withErrors($validation['errors'])->withInput();
         }
-
         $address = new Address();
         $addressUUID = $request->input('address_uuid') ?: ModelsBase::createuuid();
         $addressData = [
