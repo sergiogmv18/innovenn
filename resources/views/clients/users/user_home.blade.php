@@ -1,357 +1,251 @@
 @php
-use App\Models\User;
+  use App\Models\User;
 @endphp
+
 @extends('main')
 
 @section('title', 'Usuarios')
-<style>
-    .page-title {
-        margin: 0;
-        font-weight: 800;
-    }
 
-    .page-subtitle {
-        margin-top: 4px;
-        font-size: 14px;
-    }
-
-    .card {
-        border-radius: var(--border-radius) !important;
-        overflow: hidden;
-
-    }
-    .table-wrap {
-        overflow-x: auto;
-    }
-    table thead {
-        background: rgba(100, 181, 246, 0.12);
-    }
-    table thead th {
-        font-weight: 800;
-    }
-
-    td {
-        font-size: 13px;
-        padding: 10px 10px !important;
-    }
-
-    td.actions {
-        white-space: nowrap;
-    }
-
-    .muted {
-        color: rgba(0, 0, 0, .35);
-    }
-
-    .no-results {
-        padding: 34px 12px;
-        text-align: center;
-        color: rgba(0, 0, 0, .55);
-    }
-
-    .no-results i {
-        font-size: 44px;
-        color: rgba(0, 0, 0, .30);
-    }
-
-    .no-title {
-        margin-top: 10px;
-        font-weight: 800;
-        color: rgba(0, 0, 0, .70);
-    }
-
-    .no-subtitle {
-        margin-top: 4px;
-        font-size: 14px;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    .action-btn {
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        font-size: 18px;
-        padding: 6px 10px;
-        border-radius: 10px;
-    }
-
-    .action-btn:hover {
-        background: rgba(0, 0, 0, .06);
-    }
-
-    .action-menu {
-        position: fixed;
-        /* 👈 clave: evita recorte por tablas */
-        min-width: 190px;
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, .08);
-        border-radius: 14px;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
-        padding: 8px;
-        z-index: 99999;
-        display: none;
-    }
-
-    .action-menu a,
-    .action-menu button {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 10px;
-        border-radius: 10px;
-        text-decoration: none;
-        color: #222;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: left;
-    }
-
-    .action-menu a:hover,
-    .action-menu button:hover {
-        background: rgba(100, 181, 246, .12);
-    }
-
-    .action-menu .danger {
-        color: #d32f2f;
-    }
-
-    .action-menu .danger:hover {
-        background: rgba(211, 47, 47, .10);
-    }
-
-    .menu-divider {
-        height: 1px;
-        background: rgba(0, 0, 0, .08);
-        margin: 6px 0;
-    }
-
-    button:focus {
-    outline: none;
-        background-color: var(--color-button) !important;
-    }
-</style>
 @section('content')
-<section class="section section-stats">
-    <div class="row center">
-        <div class="col s12 m12 l12">
-            <div class="left">
-                <h5 class="page-title">Usuarios</h5>
-                <div class="left grey-text">
-                    Total: {{ count($allUser) }}
-                </div>
-            </div>
-
-            <div class="card col s12 m12 l12">
-                <div class="card-content">
-                    <div class="table-wrap">
-                        <table class="highlight striped responsive-table" id="travelersTable">
-                            <thead>
-                                <tr>
-                                    <th>Nombre completo</th>
-                                    <th>Correo electronico</th>
-                                    <th>Telefono</th>
-                                    <th>Rol</th>
-                                    <th class="right-align">Acciones</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @forelse ($allUser as $user)
-                                <tr data-row="1">
-                                    <td>
-                                        {{ strtoupper($user->getFullName()) }}
-                                    </td>
-
-                                    <td>{{ $user->email_address}}</td>
-
-                                    <td>
-                                        {{ strtoupper($user->phone_number) }}
-                                    </td>
-                                    <td>
-                                        {{ strtoupper($user->getNameType()) }}
-                                    </td>
-                                    @if((int) Session::get('user')->type === User::ROLE_ADMIN)
-                                        <td class="right-align actions" style="position: relative;">
-                                            <button type="button"
-                                                class="action-btn"
-                                                onclick="toggleMenu(event, 'menu-{{ $user->uuid }}')">
-                                               Acciones
-                                            </button>
-                                            <div id="menu-{{ $user->uuid }}" class="action-menu" aria-hidden="true">
-                                                <a href="{{ route('editUserForm', [Session::get('user')->uuid, $user->uuid]) }}"><i class="fa-regular fa-pen-to-square" style="color:var(--color-button);"></i> Editar</a>
-                                                @if ($user->uuid != Session::get('user')->uuid)
-                                                    <div class="menu-divider"></div>
-                                                    <button type="button"
-                                                        class="danger"
-                                                        onclick="deleteUser(this)"
-                                                        data-user-uuid="{{ $user->uuid }}">
-                                                        Eliminar
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    @else
-                                    <td></td>
-                                    @endif
-                                </tr>
-                                @empty
-                                    <tr data-empty="1">
-                                        <td colspan="5">
-                                            <div class="no-results">
-                                                <i class="material-icons">inbox</i>
-                                                <div class="no-title">Aún no hay registros</div>
-                                                <div class="no-subtitle">Crea tu primer parte con el botón +.</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+<div class="space-y-8">
+  {{-- Header --}}
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        Total: {{ count($allUser) }}
+      </p>
     </div>
-</section>
 
-{{-- tu float button lo puedes dejar igual --}}
-<div class="fixed-action-btn">
-    <a class="btn-floating btn-large" href="{{ route('createOrEditUserIndex', Session::get('user')->uuid) }}" style="background-color:var(--color-button);">
-        <i class="material-icons">add</i>
+    {{-- Botón crear (desktop) --}}
+    <a href="{{ route('createOrEditUserIndex', Session::get('user')->uuid) }}"
+       class="hidden sm:inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-white
+              shadow-lg shadow-primary/25 hover:bg-primary/90 transition">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      Nuevo usuario
     </a>
-</div>
+  </div>
 
+  {{-- Card Tabla --}}
+  <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full table-fixed text-left">
+        <thead class="bg-slate-50 dark:bg-slate-800/50">
+          <tr class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <th class="px-6 py-4">Nombre completo</th>
+            <th class="px-6 py-4">Correo electrónico</th>
+            <th class="px-6 py-4">Teléfono</th>
+            <th class="px-6 py-4">Rol</th>
+            <th class="px-6 py-4 text-right">Acciones</th>
+          </tr>
+        </thead>
 
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          @forelse ($allUser as $user)
+            <tr class="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+              <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">
+                {{ strtoupper($user->getFullName()) }}
+              </td>
 
+              <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                {{ $user->email_address }}
+              </td>
 
-{{-- modal igual --}}
-<div id="modal-delete-user" class="modal">
-    <div class="modal-content">
-        <h4>Confirmación de eliminación</h4>
-        <p>¿Está seguro de que desea eliminar este Usuario? Esta acción no se puede deshacer.</p>
+              <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                {{ strtoupper($user->phone_number) }}
+              </td>
+
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center rounded-full dark:bg-slate-800 px-2.5 py-1 text-[11px] font-extrabold text-slate-700 dark:text-slate-200" style="background-color: {{ $user->getNameType(true) }}">
+                  {{ strtoupper($user->getNameType()) }}
+                </span>
+              </td>
+
+              <td class="px-6 py-4 text-right">
+                @if((int) Session::get('user')->type === User::ROLE_ADMIN)
+                  <button type="button"
+                          class="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800
+                                 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-extrabold text-slate-700 dark:text-slate-200
+                                 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                          onclick="toggleMenu(event, 'menu-{{ $user->uuid }}')">
+                    Acciones
+                    <span class="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+                  </button>
+
+                  {{-- Menú flotante (fixed para no recortarse con overflow) --}}
+                  <div id="menu-{{ $user->uuid }}"
+                       class="action-menu fixed z-[9999] hidden min-w-[200px] rounded-2xl border border-slate-200 dark:border-slate-800
+                              bg-white dark:bg-slate-900 shadow-xl shadow-slate-900/10 p-2">
+                    <a class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200
+                              hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                       href="{{ route('editUserForm', [Session::get('user')->uuid, $user->uuid]) }}">
+                      <span class="material-symbols-outlined text-[18px] text-primary">edit</span>
+                      Editar
+                    </a>
+
+                    @if ($user->uuid != Session::get('user')->uuid)
+                      <div class="my-2 h-px bg-slate-200 dark:bg-slate-800"></div>
+
+                      <button type="button"
+                              class="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-rose-600
+                                     hover:bg-rose-50 dark:hover:bg-rose-500/10 transition"
+                              onclick="openDeleteModal('{{ $user->uuid }}')">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                        Eliminar
+                      </button>
+                    @endif
+                  </div>
+                @else
+                  <span class="text-xs text-slate-400">—</span>
+                @endif
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="5" class="px-6 py-12">
+                <div class="text-center">
+                  <div class="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
+                    <span class="material-symbols-outlined text-slate-400">inbox</span>
+                  </div>
+                  <p class="font-extrabold text-slate-800 dark:text-white">Aún no hay registros</p>
+                  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Crea tu primer usuario con el botón +.</p>
+                </div>
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
     </div>
-    <div class="modal-footer">
-        <a class="modal-close waves-effect waves-grey btn-flat">Cancelar</a>
-        <a id="confirm-button-delete-user" class="waves-effect waves-red red-text btn-flat">Eliminar</a>
+  </div>
+
+  {{-- FAB (+) móvil/desktop --}}
+
+  <!-- <a href="{{ route('createOrEditUserIndex', Session::get('user')->uuid) }}"
+     class="fixed bottom-6 right-6 inline-flex items-center justify-center size-14 rounded-full bg-primary text-white
+            shadow-xl shadow-primary/30 hover:bg-primary/90 transition z-50">
+    <span class="material-symbols-outlined text-[26px]">add</span>
+  </a> -->
+
+  {{-- Modal eliminar (Tailwind) --}}
+  <div id="modal-delete-user" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-slate-900/50" onclick="closeDeleteModal()"></div>
+
+    <div class="relative mx-auto mt-24 w-[92%] max-w-md rounded-2xl bg-white dark:bg-slate-900
+                border border-slate-200 dark:border-slate-800 shadow-xl p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Confirmación de eliminación</h3>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            ¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer.
+          </p>
+        </div>
+
+        <button type="button" class="rounded-xl p-2 hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closeDeleteModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-2">
+        <button type="button"
+                class="rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-extrabold
+                       text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                onclick="closeDeleteModal()">
+          Cancelar
+        </button>
+
+        <button id="confirm-button-delete-user" type="button"
+                class="rounded-xl bg-rose-600 px-4 py-2 text-sm font-extrabold text-black hover:bg-rose-700 transition">
+          Eliminar
+        </button>
+      </div>
     </div>
+  </div>
+
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    var modelDeleteUser;
+  let deleteUserUuid = null;
 
+  // ---- Menú acciones ----
+  function closeAllMenus() {
+    document.querySelectorAll('.action-menu').forEach(m => m.classList.add('hidden'));
+  }
 
-    function closeAllMenus() {
-        document.querySelectorAll('.action-menu').forEach(m => m.style.display = 'none');
+  function toggleMenu(e, menuId) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const menu = document.getElementById(menuId);
+    const isOpen = !menu.classList.contains('hidden');
+
+    closeAllMenus();
+    if (isOpen) return;
+
+    // Mostrar para medir
+    menu.classList.remove('hidden');
+
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    let top = rect.bottom + 8;
+    let left = rect.right - menu.offsetWidth;
+
+    const pad = 10;
+    if (left < pad) left = pad;
+    if (top + menu.offsetHeight > window.innerHeight - pad) {
+      top = rect.top - menu.offsetHeight - 8;
     }
+    if (top < pad) top = pad;
 
-    function toggleMenu(e, menuId) {
-        e.preventDefault();
-        e.stopPropagation();
-        const menu = document.getElementById(menuId);
-        const isOpen = menu.style.display === 'block';
-        closeAllMenus();
-        if (isOpen) return;
-        // Posicionar cerca del botón
-        const rect = e.currentTarget.getBoundingClientRect();
-        menu.style.display = 'block';
-        // Por defecto: abajo a la derecha del botón
-        let top = rect.bottom + 8;
-        let left = rect.right - menu.offsetWidth;
-        // Ajuste si se sale de pantalla
-        const pad = 10;
-        if (left < pad) left = pad;
-        if (top + menu.offsetHeight > window.innerHeight - pad) {
-            top = rect.top - menu.offsetHeight - 8;
-        }
-        if (top < pad) top = pad;
-        menu.style.top = `${top}px`;
-        menu.style.left = `${left}px`;
-    }
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
+  }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Cerrar al click afuera / scroll / resize / ESC
-        document.addEventListener('click', closeAllMenus);
-        document.addEventListener('scroll', closeAllMenus, true);
-        window.addEventListener('resize', closeAllMenus);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeAllMenus();
-        });
+  document.addEventListener('click', closeAllMenus);
+  document.addEventListener('scroll', closeAllMenus, true);
+  window.addEventListener('resize', closeAllMenus);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAllMenus(); });
 
+  // ---- Modal eliminar ----
+  function openDeleteModal(uuid) {
+    closeAllMenus();
+    deleteUserUuid = uuid;
+    document.getElementById('modal-delete-user').classList.remove('hidden');
+  }
 
+  function closeDeleteModal() {
+    deleteUserUuid = null;
+    document.getElementById('modal-delete-user').classList.add('hidden');
+  }
 
+  document.getElementById('confirm-button-delete-user').addEventListener('click', function () {
+    if (!deleteUserUuid) return;
 
-        // INITIAL MODAL
-        initalModal();
-        var modalElement = document.querySelector('#modal-delete-user');
-        modelDeleteUser = M.Modal.getInstance(modalElement);
+    const formData = new FormData();
+    const url = "{{ route('deleteUser', [Session::get('user')->uuid, 'USER_UUID']) }}".replace('USER_UUID', deleteUserUuid);
 
-        // FLOAT BUTTON INITIAL
-        var elemsFloatButton = document.querySelectorAll('.fixed-action-btn');
-        M.FloatingActionButton.init(elemsFloatButton, {
-            hoverEnabled: false
-
-        });
-        //TOOLTIPPED
-        // var elemsTooltipped = document.querySelectorAll('.tooltipped');
-        // M.Tooltip.init(elemsTooltipped, {});
-
-    });
-
-
-
-    /*
-     * Delete Travels
-     * @author SGV
-     * @version 1.0 - 20230215 - initial release
-     * @param <this> element
-     * @return <HTML>
-     **/
-    function deleteUser(element) {
-        let userUuid = element.getAttribute("data-user-uuid");
-        modelDeleteUser.open();
-        document.getElementById('confirm-button-delete-user').addEventListener('click', function() {
-            if (userUuid != null) {
-                const formData = new FormData();
-                const url = "{{ route('deleteUser', [Session::get('user')->uuid, 'USER_UUID']) }}".replace('USER_UUID', userUuid);
-                ajaxRequest(url, "POST", formData, onSuccess, onError);
-            } else {
-                modelDeleteUser.close();
-                showToastComponent("No se puede eliminar ese usuario, por favor intente mas tarde o comuniquese con soporte", null, 'notification');
-                return;
-            }
-        });
-    }
-
-    // Callback de success
-    function onSuccess(response) {
-        modelDeleteUser.close();
-        showToastComponent("Usuario eliminado con exito", null, null);
+    ajaxRequest(url, "POST", formData,
+      function () {
+        closeDeleteModal();
+       // showToastComponent("Usuario eliminado con éxito", null, null);
         window.location.reload();
-        return;
-    }
+      },
+      function () {
+        closeDeleteModal();
+        showToastComponent("El usuario no pudo ser eliminado, intente más tarde o contacte a soporte", null, 'error');
+      }
+    );
+  });
 
-    // Callback de error
-    function onError(status, textStatus, errorThrown, response) {
-        showToastComponent("El usuario no pudo ser eliminado, por favor intente mas tarde, o contacte a soporte", null, 'error');
-        return;
-    }
+  // Toasts (si vienes con errores/flash)
+  document.addEventListener('DOMContentLoaded', function () {
+    @if($errors->any())
+      showToastComponent(@json($errors->first()), null, 'error');
+    @elseif(session('message'))
+      showToastComponent(@json(session('message')), null, null);
+    @elseif(session('error'))
+      showToastComponent(@json(session('error')), null, 'error');
+    @endif
+  });
 </script>
 @endpush

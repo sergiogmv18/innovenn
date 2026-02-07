@@ -18,6 +18,8 @@ class User extends Authenticatable
     public const ROLE_STAFF = 3;
     public const ROLE_RECEPTIONIST = 4;
     public const ROLE_ADMINISTRATIVE = 5;
+    public const HOUSEKEEPING = 6;
+    public const ADMIN_HOUSEKEEPING = 7;
 
     /**
      * Los atributos que se pueden asignar masivamente.
@@ -227,22 +229,39 @@ class User extends Authenticatable
         return [
             "Administrador" => User::ROLE_ADMIN,
             "Administrador / Financiero" => User::ROLE_ADMINISTRATIVE,
-            "Recepcionista" => User::ROLE_RECEPTIONIST,   
+            "Jefa de ama de llave" => User::ADMIN_HOUSEKEEPING,
+            "Ama de llave" => User::HOUSEKEEPING,
+            "Recepcionista" => User::ROLE_RECEPTIONIST,     
         ];
     }
 
-    public function getNameType(){
+    public function getNameType(bool $color = false){
+        $name = "Indefinido";
+        $currentColor = "#0d7cff26";
         switch($this->type){
             case User::ROLE_ADMIN:
-                return  "Administrador";
+                $name = "Administrador";
+                $currentColor = "#0dff0d26";
+                break;
             case  User::ROLE_ADMINISTRATIVE:
-                return  "Administrador / Financiero";
+                $name = "Administrador / Financiero";
+                break;
             case  User::ROLE_RECEPTIONIST: 
-                return "Recepcionista";
-            default:
-            return "Indefinido";
-
+                $name ="Recepcionista";
+                break;
+            case  User::HOUSEKEEPING:
+                $name ="Ama de llaves";
+                break;
+            case  User::ADMIN_HOUSEKEEPING:
+                $name ="Jefa ama de llaves";
+                break;
+                
+               
         }
+         if($color){
+                   return $currentColor;
+                }
+            return $name;
     }
 
 

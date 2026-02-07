@@ -50,7 +50,7 @@
             </div>
             <div class="relative flex justify-center">
                 <div class="relative z-10 bg-white rounded-3xl shadow-2xl p-4 border border-gray-100">
-                    <img src="https://via.placeholder.com/500x350/f0f4f8/00a1e4?text=Panel+de+Control+Software" alt="UI Screenshot" class="rounded-xl">
+                    <img src="{{ asset('img/screen.png') }}" alt="UI Screenshot" class="rounded-xl">
                 </div>
                 <div class="absolute -top-10 -right-10 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
             </div>
